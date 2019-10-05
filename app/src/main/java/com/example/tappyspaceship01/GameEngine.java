@@ -61,7 +61,10 @@ public class GameEngine extends SurfaceView implements Runnable {
     public GameEngine(Context context, int w, int h) {
         super(context);
 
-        
+        MediaPlayer mp = MediaPlayer.create(getContext(), R.raw.background);
+        mp.start();
+
+
 
         this.holder = this.getHolder();
         this.paintbrush = new Paint();
