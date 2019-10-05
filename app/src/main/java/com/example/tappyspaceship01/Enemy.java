@@ -15,6 +15,26 @@ public class Enemy {
     private Bitmap image;
     private Rect hitbox;
 
+    private int bulletxPos;
+    private int bulletyPOs;
+
+    public int getBulletxPos() {
+
+        return bulletxPos;
+    }
+
+    public void setBulletxPos(int bulletxPos) {
+        this.bulletxPos = this.xPosition;
+    }
+
+    public int getBulletyPOs() {
+        return bulletyPOs;
+    }
+
+    public void setBulletyPOs(int bulletyPOs) {
+        this.bulletyPOs = this.yPosition;
+    }
+
     private int xPosition;
     private int yPosition;
     private final int BULLET_WIDTH=15;

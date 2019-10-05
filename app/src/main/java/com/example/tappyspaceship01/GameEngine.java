@@ -6,11 +6,14 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.media.MediaPlayer;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import java.util.Random;
+
+
 
 
 public class GameEngine extends SurfaceView implements Runnable {
@@ -47,8 +50,9 @@ public class GameEngine extends SurfaceView implements Runnable {
     // ----------------------------
     Player player;
     Enemy enemy;
-    int lives = 10;
+    int lives = 100;
     int numLoops;
+
 
     // ----------------------------
     // ## GAME STATS
@@ -56,6 +60,8 @@ public class GameEngine extends SurfaceView implements Runnable {
 
     public GameEngine(Context context, int w, int h) {
         super(context);
+
+        
 
         this.holder = this.getHolder();
         this.paintbrush = new Paint();
@@ -129,19 +135,76 @@ public class GameEngine extends SurfaceView implements Runnable {
 
         this.bgXposition = this.bgXposition - 50;
         backgroundRightside = this.bgXposition + this.background.getWidth();
-        if (backgroundRightside < 0) {
+        if (backgroundRightside < 0)
+        {
             this.bgXposition = 0;
         }
         numLoops = numLoops + 1;
+
+     if(numLoops%20==0)
+     {
+         Random r = new Random();
+         int randomXPos = r.nextInt(this.screenWidth)-20;
+         int randomYPos = r.nextInt(this.screenHeight)-20;
+         this.enemy.setxPosition(randomXPos);
+         this.enemy.setyPosition(randomYPos);
+
+
+     }
+
+
+
+//        for (int i = 0; i < this.enemy.getBullets().size();i++)
+//        {
+//            Rect bullet = this.enemy.getBullets().get(i);
+//
+//            double a = (this.player.getyPosition()- this.enemy.getBulletxPos();
+//            double b = (this.player.getyPosition() - this.enemy.getBulletyPOs());
+//            double distance = Math.sqrt((a*a) + (b*b));
+//
+//            // 2. calculate the "rate" to move
+//            double xn = (a / distance);
+//            double yn = (b / distance);
+//
+//            // 3. move the bullet
+//            this.enemy.setxPosition(this.enemy.getxPosition() + (int)(xn * 15));
+//            this.enemy.setxPosition(this.enemy.getyPosition() + (int)(yn * 15));
+//
+//           // Log.d(TAG,"New bullet (x,y): (" + bullet.x + "," + bullet.y + ")");
+//
+//        }
+//
+
+
+
+
+
+
+
         // @TODO: Update position of player
         if (fingerAction == "mousedown" && xPos >= screenWidth / 2) {
             this.player.setxPosition(this.player.getxPosition() - 100);
             this.player.updatePlayerHitbox();
 
+
+
         } else if (fingerAction == "mousedown" && xPos <= screenWidth / 2) {
             this.player.setxPosition(this.player.getxPosition() + 100);
             this.player.updatePlayerHitbox();
         }
+
+        else if (fingerAction == "mousedown" && xPos >= this.player.getxPosition()/ 2) {
+            this.player.setyPosition(this.player.getyPosition() - 100);
+            this.player.updatePlayerHitbox();
+        }
+
+        else if  (fingerAction == "mousedown" && xPos <= this.player.getxPosition() / 2) {
+            this.player.setyPosition(this.player.getyPosition() + 100);
+            this.player.updatePlayerHitbox();
+        }
+
+
+
 //        if(enemy.getxPosition()>=screenWidth/2)
 //        this.enemy.updateEnemyPosition1();
 //        this.enemy.updateEnemyHitbox();
@@ -167,13 +230,14 @@ public class GameEngine extends SurfaceView implements Runnable {
             this.player.setxPosition(screenWidth/2);
             this.player.setyPosition(screenHeight/2);
             this.player.updatePlayerHitbox();
-           // lives=lives-1;
+            lives=lives-1;
         }
 
 
         if (numLoops % 5  == 0) {
             this.enemy.spawnBullet();
         }
+
 
         int BULLET_SPEED=50;
     for(int i=0;i<this.enemy.getBullets().size();i++)
@@ -182,7 +246,6 @@ public class GameEngine extends SurfaceView implements Runnable {
             bullet.left=bullet.left-BULLET_SPEED;
             bullet.right=bullet.right-BULLET_SPEED;
         }
-
 
  if(lives==0)
  {
