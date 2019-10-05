@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 
+import java.util.ArrayList;
+
 public class Enemy {
 
     // PROPERTIES:
@@ -15,14 +17,15 @@ public class Enemy {
 
     private int xPosition;
     private int yPosition;
-
+    private final int BULLET_WIDTH=15;
+    private ArrayList <Rect> bullets=new ArrayList<>();
     public Enemy(Context context, int x, int y) {
         // 1. set up the initial position of the Enemy
         this.xPosition = x;
         this.yPosition = y;
 
         // 2. Set the default image - all enemies have same image
-        this.image = BitmapFactory.decodeResource(context.getResources(), R.drawable.alien_ship2);
+        this.image = BitmapFactory.decodeResource(context.getResources(), R.drawable.monster);
 
         // 3. Set the default hitbox - all enemies have same hitbox
         this.hitbox = new Rect(
@@ -33,18 +36,52 @@ public class Enemy {
         );
     }
 
-    public void updateEnemyPosition()
+    public void updateEnemyHitbox()
     {
-        this.xPosition=this.xPosition-25;
         this.hitbox.left=this.xPosition;
         this.hitbox.top=this.yPosition;
         this.hitbox.right=this.xPosition+image.getWidth();
         this.hitbox.bottom=this.yPosition+image.getHeight();
     }
+
+
+    public void updateEnemyPosition1()
+    {
+
+        this.xPosition=this.xPosition-25;
+        this.updateEnemyHitbox();
+    }
+
+    public void updateEnemyPosition2()
+    {
+
+        this.xPosition=this.xPosition+25;
+        this.updateEnemyHitbox();
+    }
+
+
 ;
+    public void spawnBullet()
+    {
+        Rect bullet=new Rect(this.xPosition,this.yPosition+this.image.getHeight()/2,this.xPosition+BULLET_WIDTH,this.yPosition+this.image.getHeight()/2+BULLET_WIDTH);
+        this.bullets.add(bullet);
+    }
 
     // Getter and setters
     // Autogenerate this by doing Right Click --> Generate --> Getter&Setter
+
+    public int getBULLET_WIDTH() {
+        return BULLET_WIDTH;
+    }
+
+    public ArrayList<Rect> getBullets() {
+        return bullets;
+    }
+
+    public void setBullets(ArrayList<Rect> bullets) {
+        this.bullets = bullets;
+    }
+
 
     public Bitmap getImage() {
         return image;

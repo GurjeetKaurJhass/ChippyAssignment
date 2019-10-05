@@ -1,7 +1,7 @@
 package com.example.tappyspaceship01;
-
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -10,13 +10,13 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-
 import java.util.Random;
+
 
 public class GameEngine extends SurfaceView implements Runnable {
 
     // Android debug variables
-    final static String TAG="TAPPY-SPACESHIP";
+    final static String TAG = "TAPPY-SPACESHIP";
 
     // screen size
     int screenHeight;
@@ -33,7 +33,9 @@ public class GameEngine extends SurfaceView implements Runnable {
     SurfaceHolder holder;
     Canvas canvas;
     Paint paintbrush;
-
+    Bitmap background;
+    int bgXposition;
+    int backgroundRightside;
 
 
     // -----------------------------------
@@ -45,9 +47,8 @@ public class GameEngine extends SurfaceView implements Runnable {
     // ----------------------------
     Player player;
     Enemy enemy;
-    Rect enemyHitbox;
-    Rect playerHitbox;
-
+    int lives = 10;
+    int numLoops;
 
     // ----------------------------
     // ## GAME STATS
@@ -60,13 +61,15 @@ public class GameEngine extends SurfaceView implements Runnable {
         this.paintbrush = new Paint();
         this.screenWidth = w;
         this.screenHeight = h;
-        player=new Player(this.getContext(),100,100);
-        enemy=new Enemy(this.getContext(),1400,100);
+        player = new Player(this.getContext(), 100, 100);
+        enemy = new Enemy(this.getContext(), 1400, 100);
 
         this.printScreenInfo();
-
-        // @TODO: Add your sprites
-        // @TODO: Any other game setup
+        this.background = BitmapFactory.decodeResource(context.getResources(), R.drawable.background);
+        this.background = Bitmap.createScaledBitmap(this.background, this.screenWidth, this.screenHeight, false);
+//        // @TODO: Add your sprites
+//        // @TODO: Any other game setup
+        this.bgXposition = 0;
 
     }
 
@@ -79,6 +82,7 @@ public class GameEngine extends SurfaceView implements Runnable {
     private void spawnPlayer() {
         //@TODO: Start the player at the left side of screen
     }
+
     private void spawnEnemyShips() {
         Random random = new Random();
 
@@ -121,63 +125,148 @@ public class GameEngine extends SurfaceView implements Runnable {
     // ------------------------------
 
 
-
     public void updatePositions() {
-        // @TODO: Update position of player
-    if(fingerAction=="mousedown")
-    {
-        this.player.setyPosition(this.player.getyPosition()-10);
-        this.playerHitbox.left=this.player.getxPosition();
-        this.playerHitbox.top=this.player.getyPosition();
-        this.playerHitbox.right=this.player.getxPosition()+this.player.getImage().getWidth();
-        this.playerHitbox.bottom=this.player.getyPosition()+this.player.getImage().getHeight();
-    }
 
-    else if(this.fingerAction=="mouseup")
-        {
-            this.player.setyPosition(this.player.getyPosition()+10);
-            this.playerHitbox.left=this.player.getxPosition();
-            this.playerHitbox.top=this.player.getyPosition();
-            this.playerHitbox.right=this.player.getxPosition()+this.player.getImage().getWidth();
-            this.playerHitbox.bottom=this.player.getyPosition()+this.player.getImage().getHeight();
-
+        this.bgXposition = this.bgXposition - 50;
+        backgroundRightside = this.bgXposition + this.background.getWidth();
+        if (backgroundRightside < 0) {
+            this.bgXposition = 0;
         }
+        numLoops = numLoops + 1;
+        // @TODO: Update position of player
+        if (fingerAction == "mousedown" && xPos >= screenWidth / 2) {
+            this.player.setxPosition(this.player.getxPosition() - 100);
+            this.player.updatePlayerHitbox();
 
-    this.enemy.updateEnemyPosition();
+        } else if (fingerAction == "mousedown" && xPos <= screenWidth / 2) {
+            this.player.setxPosition(this.player.getxPosition() + 100);
+            this.player.updatePlayerHitbox();
+        }
+//        if(enemy.getxPosition()>=screenWidth/2)
+//        this.enemy.updateEnemyPosition1();
+//        this.enemy.updateEnemyHitbox();
+//
+//        if(enemy.getxPosition()<=screenWidth/2)
+//            this.enemy.updateEnemyPosition2();
+//        this.enemy.updateEnemyHitbox();
 
-    if(this.enemy.getxPosition()<=0)
-    {
-      enemy.setxPosition(this.screenWidth);
 
-    }
+//    else if(this.fingerAction=="mouseup")
+//        {
+//            this.player.setyPosition(this.player.getyPosition()+10);
+//            this.player.updatePlayerHitbox();
+//        }
+//
+//           this.enemy.updateEnemyPosition();
+//           this.enemy.updateEnemyHitbox();
+
+
+
     if(this.player.getHitbox().intersect(this.enemy.getHitbox())==true)
         {
-            this.player.setxPosition(100);
-            this.player.setyPosition(600);
-            this.playerHitbox.left=this.player.getxPosition();
-            this.playerHitbox.top=this.player.getyPosition();
-            this.playerHitbox.right=this.player.getxPosition()+this.player.getImage().getWidth();
-            this.playerHitbox.bottom=this.player.getyPosition()+this.player.getImage().getHeight();
+            this.player.setxPosition(screenWidth/2);
+            this.player.setyPosition(screenHeight/2);
+            this.player.updatePlayerHitbox();
+           // lives=lives-1;
+        }
+
+
+        if (numLoops % 5  == 0) {
+            this.enemy.spawnBullet();
+        }
+
+        int BULLET_SPEED=50;
+    for(int i=0;i<this.enemy.getBullets().size();i++)
+        {
+            Rect bullet=this.enemy.getBullets().get(i);
+            bullet.left=bullet.left-BULLET_SPEED;
+            bullet.right=bullet.right-BULLET_SPEED;
+        }
+
+
+ if(lives==0)
+ {
+     this.gameIsRunning=false;
+ }
+
+//        if(this.player.getHitbox().intersect(this.enemy2.getHitbox())==true)
+//        {
+//            this.player.setxPosition(100);
+//            this.player.setyPosition(600);
+//            this.player.updatePlayerHitbox();
+//            lives=lives-1;
+//        }
+
+
+        // COLLISION DETECTION ON THE BULLET AND WALL
+        for (int i = 0; i < this.enemy.getBullets().size();i++) {
+            Rect bullet = this.enemy.getBullets().get(i);
+
+            // For each bullet, check if teh bullet touched the wall
+            if (bullet.right < 0) {
+                this.enemy.getBullets().remove(bullet);
+            }
+
+        }
+
+        // COLLISION DETECTION BETWEEN BULLET AND PLAYER
+        for (int i = 0; i < this.enemy.getBullets().size();i++) {
+            Rect bullet = this.enemy.getBullets().get(i);
+
+            if (this.player.getHitbox().intersect(bullet)) {
+                this.player.setxPosition(100);
+                this.player.setyPosition(600);
+                this.player.updatePlayerHitbox();
+                lives = lives - 1;
+            }
+
 
         }
 
     }
+
+
+
+    // MOVING THE BULLETS
+
+
+
 
     public void redrawSprites() {
         if (this.holder.getSurface().isValid()) {
             this.canvas = this.holder.lockCanvas();
 
             //----------------
-
             // configure the drawing tools
             this.canvas.drawColor(Color.argb(255,255,255,255));
             paintbrush.setColor(Color.BLUE);
+           this.canvas.drawBitmap(this.background,this.bgXposition,0,paintbrush);
+           this.canvas.drawBitmap(this.background,this.backgroundRightside,0,paintbrush);
+
+
+
             this.canvas.drawBitmap(this.player.getImage(),this.player.getxPosition(),this.player.getyPosition(),paintbrush);
             this.canvas.drawBitmap(this.enemy.getImage(),this.enemy.getxPosition(),this.enemy.getyPosition(),paintbrush);
-            enemyHitbox=this.enemy.getHitbox();
-            this.canvas.drawRect(enemyHitbox,paintbrush);
-            playerHitbox=this.player.getHitbox();
-            this.canvas.drawRect(playerHitbox,paintbrush);
+
+            this.paintbrush.setColor(Color.YELLOW);
+
+            this.paintbrush.setTextSize(65);
+            this.canvas.drawText("Lives Remaining"+lives,1100,800,paintbrush);
+            canvas.drawText("Bullets: " + this.enemy.getBullets().size(),
+                    1100,
+                    720,
+                    paintbrush
+            );
+
+
+           // this.canvas.drawRect(playerHitbox,paintbrush);
+             ///draw bullet on screen
+            this.paintbrush.setColor(Color.YELLOW);
+            for(int i=0;i<this.enemy.getBullets().size();i++)
+            {
+               Rect bullet=this.enemy.getBullets().get(i) ;
+               canvas.drawRect(bullet,paintbrush);
+            }
 
             // DRAW THE PLAYER HITBOX
             // ------------------------
@@ -185,9 +274,6 @@ public class GameEngine extends SurfaceView implements Runnable {
             paintbrush.setColor(Color.BLUE);
             paintbrush.setStyle(Paint.Style.STROKE);
             paintbrush.setStrokeWidth(5);
-
-
-
             //----------------
             this.holder.unlockCanvasAndPost(canvas);
         }
@@ -208,13 +294,19 @@ public class GameEngine extends SurfaceView implements Runnable {
 
 
 String fingerAction="";
-    @Override
+
+    Float xPos;
+    Float yPos;
+
     public boolean onTouchEvent(MotionEvent event) {
         int userAction = event.getActionMasked();
         //@TODO: What should happen when person touches the screen?
         if (userAction == MotionEvent.ACTION_DOWN) {
            // Log.d(TAG, "Person tapped the screen");
             fingerAction="mousedown";
+            xPos=event.getX();
+            yPos=event.getY();
+
 
         }
         else if (userAction == MotionEvent.ACTION_UP) {
