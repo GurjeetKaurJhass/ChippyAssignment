@@ -59,7 +59,8 @@ public class GameEngine extends SurfaceView implements Runnable {
 
     // ----------------------------
     // ## GAME STATS
-    // ----------------------------
+    // ---------------------------
+
 
 
 
@@ -85,7 +86,6 @@ public class GameEngine extends SurfaceView implements Runnable {
         this.bgXposition = 0;
 
     }
-
 
 
 
