@@ -185,46 +185,42 @@ public class GameEngine extends SurfaceView implements Runnable {
 
 
         // @TODO: Update position of player
-        if (fingerAction == "mousedown" && xPos >= screenWidth / 2) {
-            this.player.setxPosition(this.player.getxPosition() - 100);
+
+    //    Player Movement
+        if (personTapped.contentEquals("down")) {
+
+            this.player.setyPosition(this.player.getyPosition() + 30);
+
             this.player.updatePlayerHitbox();
+            if(this.player.getyPosition() >= this.screenHeight){
+                personTapped = "up";
 
+            }
+        } else if (personTapped.contentEquals("up")) {
 
-
-        } else if (fingerAction == "mousedown" && xPos <= screenWidth / 2) {
-            this.player.setxPosition(this.player.getxPosition() + 100);
+            this.player.setyPosition(this.player.getyPosition() - 30);
             this.player.updatePlayerHitbox();
+            if (this.player.getyPosition() <= 0) {
+                personTapped = "down";
+            }
+
+        }else if( personTapped.contentEquals("right")) {
+
+            this.player.setxPosition(this.player.getxPosition() + 30);
+
+            this.player.updatePlayerHitbox();
+            if(this.player.getxPosition() >= this.screenWidth){
+                personTapped = "left";}
+        }else if( personTapped.contentEquals("left")) {
+
+            this.player.setxPosition(this.player.getxPosition() - 30);
+
+            this.player.updatePlayerHitbox();
+            if(this.player.getxPosition() <= 0){
+                personTapped = "right";}
         }
 
-        else if (fingerAction == "mousedown" && xPos >= this.player.getxPosition()/ 2) {
-            this.player.setyPosition(this.player.getyPosition() - 100);
-            this.player.updatePlayerHitbox();
-        }
 
-        else if  (fingerAction == "mousedown" && xPos <= this.player.getxPosition() / 2) {
-            this.player.setyPosition(this.player.getyPosition() + 100);
-            this.player.updatePlayerHitbox();
-        }
-
-
-
-//        if(enemy.getxPosition()>=screenWidth/2)
-//        this.enemy.updateEnemyPosition1();
-//        this.enemy.updateEnemyHitbox();
-//
-//        if(enemy.getxPosition()<=screenWidth/2)
-//            this.enemy.updateEnemyPosition2();
-//        this.enemy.updateEnemyHitbox();
-
-
-//    else if(this.fingerAction=="mouseup")
-//        {
-//            this.player.setyPosition(this.player.getyPosition()+10);
-//            this.player.updatePlayerHitbox();
-//        }
-//
-//           this.enemy.updateEnemyPosition();
-//           this.enemy.updateEnemyHitbox();
 
 
 
@@ -359,25 +355,42 @@ public class GameEngine extends SurfaceView implements Runnable {
     // ------------------------------
 
 
-String fingerAction="";
+String personTapped="";
 
-    Float xPos;
-    Float yPos;
+    Float yPosition;
+    Float xPosition;
 
     public boolean onTouchEvent(MotionEvent event) {
         int userAction = event.getActionMasked();
         //@TODO: What should happen when person touches the screen?
         if (userAction == MotionEvent.ACTION_DOWN) {
-           // Log.d(TAG, "Person tapped the screen");
-            fingerAction="mousedown";
-            xPos=event.getX();
-            yPos=event.getY();
+            this.yPosition = event.getY();
+            this.xPosition = event.getX();
 
 
+            Log.d(TAG, "Person's pressed: "
+                    + xPosition + ","
+                    + yPosition);
+           int middleOfScreen1 = this.screenWidth / 2;
+          int middleOfScreen = this.screenHeight / 2;
+            if (yPosition <= middleOfScreen) {
+                personTapped = "up";
+            } else if (yPosition > middleOfScreen) {
+                personTapped = "down";
+            } else if (xPosition <= middleOfScreen1) {
+            personTapped = "right";
+           } else if (xPosition > middleOfScreen1) {
+             personTapped = "left";
+            }
         }
+
+
+
+
         else if (userAction == MotionEvent.ACTION_UP) {
            // Log.d(TAG, "Person lifted finger");
-           fingerAction="mouseup";
+
+           Log.d(TAG, "User lifted finger");
         }
 
         return true;
