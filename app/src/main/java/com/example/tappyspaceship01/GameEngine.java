@@ -378,6 +378,7 @@ String fingerAction="";
         else if (userAction == MotionEvent.ACTION_UP) {
            // Log.d(TAG, "Person lifted finger");
            fingerAction="mouseup";
+           Log.d(TAG, "User lifted finger");
         }
 
         return true;
