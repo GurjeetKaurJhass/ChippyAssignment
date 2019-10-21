@@ -67,7 +67,7 @@ public class GameEngine extends SurfaceView implements Runnable {
     public GameEngine(Context context, int w, int h) {
         super(context);
 
-        MediaPlayer mp = MediaPlayer.create(getContext(), R.raw.background);
+        MediaPlayer mp = MediaPlayer.create(getContext(), R.raw.loop);
         mp.start();
 
         this.holder = this.getHolder();
@@ -75,7 +75,7 @@ public class GameEngine extends SurfaceView implements Runnable {
         this.screenWidth = w ;
         this.screenHeight = h - 200;
         player = new Player(this.getContext(), 100, 100);
-        enemy = new Enemy(this.getContext(), 400, 100);
+        enemy = new Enemy(this.getContext(), 1700, 600);
 
         this.printScreenInfo();
         this.background = BitmapFactory.decodeResource(context.getResources(), R.drawable.background);
@@ -99,11 +99,35 @@ public class GameEngine extends SurfaceView implements Runnable {
     }
 
     private void spawnEnemyShips() {
-        Random random = new Random();
+
+        {
+
+            numLoops = numLoops + 1;
+            if (numLoops % 100 == 0) {
+                Random r = new Random();
+
+                int randomXPos = r.nextInt(this.screenWidth) - 100;
+                int randomYPos = r.nextInt(this.screenHeight) - 100;
+
+                this.enemy.setxPosition(randomXPos + 10);
+                this.enemy.setyPosition(randomYPos - 10);
+                if(this.enemy.getxPosition()<=screenHeight &&this.enemy.getyPosition()<=screenHeight)
+                {
+                    this.enemy.setxPosition(randomXPos-100);
+                    this.enemy.setyPosition(randomYPos-100);
+                }
+
+            }
+        }
+
 
         //@TODO: Place the enemies in a random location
 
+
+
     }
+
+
 
     // ------------------------------
     // GAME STATE FUNCTIONS (run, stop, start)
@@ -151,18 +175,8 @@ public class GameEngine extends SurfaceView implements Runnable {
         }
         numLoops = numLoops + 1;
 
-        if (numLoops % 20 == 0) {
-            Random r = new Random();
-            int randomXPos = r.nextInt(this.screenWidth) - 20;
-            int randomYPos = r.nextInt(this.screenHeight) - 20;
-            this.enemy.setxPosition(randomXPos);
-            this.enemy.setyPosition(randomYPos);
-
-
-        }
-
-
         this.moveplayer(this.xPosition, this.yPosition);
+        this.spawnEnemyShips();
 
 //player.setxPosition((int) (Math.cos(gunAngle) * distanceFromCenter));
 //        player.setyPosition((int) (Math.cos(gunAngle) * distanceFromCenter));
@@ -232,6 +246,9 @@ public class GameEngine extends SurfaceView implements Runnable {
 //                personTapped = "right";}
 //        }
 //
+
+
+
 
         //player bullets
 
