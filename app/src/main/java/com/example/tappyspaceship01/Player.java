@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 
+import java.util.ArrayList;
+
 public class Player {
 
     // PROPERTIES
@@ -13,7 +15,17 @@ public class Player {
 
     private int xPosition;
     private int yPosition;
-    private int direction=-1;
+    private int direction= 1;
+
+    private int playerbulletxPos;
+    private int playerbulletyPOs;
+
+    public int getBulletxPos() {
+
+        return playerbulletxPos;
+    }
+    private final int BULLET_WIDTH=10;
+    private ArrayList<Rect> playerbullets=new ArrayList<>();
 
     public Player(Context context, int x, int y) {
         // 1. set up the initial position of the Enemy
@@ -31,24 +43,50 @@ public class Player {
                 this.yPosition + this.image.getHeight()
         );
     }
+    public void setBulletxPos(int bulletxPos) {
+        this.playerbulletxPos = this.xPosition;
+    }
 
+    public int getBulletyPOs() {
+        return playerbulletyPOs;
+    }
 
-public void updatePlayerHitbox()
+    public void setBulletyPOs(int bulletyPOs) {
+        this.playerbulletyPOs = this.yPosition;
+    }
+
+    public void updatePlayerHitbox()
     {
         this.hitbox.left=this.xPosition;
         this.hitbox.top=this.yPosition;
         this.hitbox.right=this.xPosition+this.image.getWidth();
         this.hitbox.bottom=this.yPosition+this.image.getHeight();
     }
-//
-//    public void spawnBullet()
-//    {
-//        Rect bullet=new Rect(this.xPosition,this.yPosition+this.image.getHeight()/2,this.xPosition+BULLET_WIDTH,this.yPosition+this.image.getHeight()/2+BULLET_WIDTH);
-//        this.bullets.add(bullet);
-//    }
+
+    public void spawnBullet()
+    {
+
+        //Rect bullet = new Rect(this.playerbulletxPos,this.playerbulletyPOs+);
+        Rect bullet=new Rect(this.xPosition,this.yPosition+this.image.getHeight()/2,this.xPosition+BULLET_WIDTH,this.yPosition+this.image.getHeight()/2+BULLET_WIDTH);
+        this.playerbullets.add(bullet);
+    }
 
 
     // GETTER AND SETTER METHODS
+
+    public int getBULLET_WIDTH() {
+        return BULLET_WIDTH;
+    }
+
+    public ArrayList<Rect> getBullets() {
+        return playerbullets;
+    }
+
+    public void setBullets(ArrayList<Rect> bullets) {
+        this.playerbullets = bullets;
+    }
+
+
     public Bitmap getImage() {
         return image;
     }
