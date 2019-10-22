@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Vector;
 
@@ -52,19 +54,19 @@ public class GameEngine extends SurfaceView implements Runnable {
     // ----------------------------
     Player player;
     Enemy enemy;
+    Powerups powerups;
     int lives = 100;
     int numLoops;
     int score = 0;
 
+    private ArrayList<Powerups> powerup=new ArrayList<>();
 
     // ----------------------------
     // ## GAME STATS
     // ---------------------------
 
 
-
-
-//changed files
+    //changed files
     public GameEngine(Context context, int w, int h) {
         super(context);
 
@@ -73,11 +75,11 @@ public class GameEngine extends SurfaceView implements Runnable {
 
         this.holder = this.getHolder();
         this.paintbrush = new Paint();
-        this.screenWidth = w ;
+        this.screenWidth = w;
         this.screenHeight = h - 200;
         player = new Player(this.getContext(), 100, 100);
         enemy = new Enemy(this.getContext(), 1700, 600);
-
+powerups = new Powerups(this.getContext(), 500,500);
         this.printScreenInfo();
         this.background = BitmapFactory.decodeResource(context.getResources(), R.drawable.background);
         this.background = Bitmap.createScaledBitmap(this.background, this.screenWidth, this.screenHeight, false);
@@ -86,7 +88,6 @@ public class GameEngine extends SurfaceView implements Runnable {
         this.bgXposition = 0;
 
     }
-
 
 
     private void printScreenInfo() {
@@ -111,10 +112,9 @@ public class GameEngine extends SurfaceView implements Runnable {
 
                 this.enemy.setxPosition(randomXPos + 10);
                 this.enemy.setyPosition(randomYPos - 10);
-                if(this.enemy.getxPosition()<=screenHeight &&this.enemy.getyPosition()<=screenHeight)
-                {
-                    this.enemy.setxPosition(randomXPos-100);
-                    this.enemy.setyPosition(randomYPos-100);
+                if (this.enemy.getxPosition() <= screenHeight && this.enemy.getyPosition() <= screenHeight) {
+                    this.enemy.setxPosition(randomXPos - 100);
+                    this.enemy.setyPosition(randomYPos - 100);
                 }
 
             }
@@ -124,9 +124,7 @@ public class GameEngine extends SurfaceView implements Runnable {
         //@TODO: Place the enemies in a random location
 
 
-
     }
-
 
 
     // ------------------------------
@@ -167,7 +165,6 @@ public class GameEngine extends SurfaceView implements Runnable {
     public void updatePositions() {
 
 
-
         this.bgXposition = this.bgXposition - 50;
         backgroundRightside = this.bgXposition + this.background.getWidth();
         if (backgroundRightside < 0) {
@@ -175,8 +172,12 @@ public class GameEngine extends SurfaceView implements Runnable {
         }
         numLoops = numLoops + 1;
 
-        this.moveplayer(this.xPosition, this.yPosition);
         this.spawnEnemyShips();
+
+        if (numLoops % 120 == 0) {
+            this.spawnPowerups();
+        }
+
 
 //player.setxPosition((int) (Math.cos(gunAngle) * distanceFromCenter));
 //        player.setyPosition((int) (Math.cos(gunAngle) * distanceFromCenter));
@@ -207,9 +208,9 @@ public class GameEngine extends SurfaceView implements Runnable {
 //        }
 
 
-
         // @TODO: Update position of player
 
+        this.moveplayer(this.xPosition, this.yPosition);
 
         //}
 // Player Movement
@@ -249,30 +250,28 @@ public class GameEngine extends SurfaceView implements Runnable {
 
 
 
-
         //player bullets
 
-        if (numLoops % 5  == 0) {
+        if (numLoops % 5 == 0) {
             this.player.spawnBullet();
         }
 
 
-        int PLAYER_BULLET_SPEED=50;
-        for(int i=0;i<this.player.getBullets().size();i++)
-        {
-            Rect bullet=this.player.getBullets().get(i);
-            bullet.left=bullet.left-PLAYER_BULLET_SPEED;
-            bullet.right=bullet.right-PLAYER_BULLET_SPEED;
+        int PLAYER_BULLET_SPEED = 50;
+        for (int i = 0; i < this.player.getBullets().size(); i++) {
+            Rect bullet = this.player.getBullets().get(i);
+            bullet.left = bullet.left - PLAYER_BULLET_SPEED;
+            bullet.right = bullet.right - PLAYER_BULLET_SPEED;
         }
 
         // collision detection between player bullets and enemy
-        for (int i = 0; i < this.player.getBullets().size();i++) {
+        for (int i = 0; i < this.player.getBullets().size(); i++) {
             Rect playerbullet = this.player.getBullets().get(i);
 
-            if (this.enemy.getHitbox().intersect(playerbullet)) {
-                this.enemy.setxPosition(100);
-                this.enemy.setyPosition(100);
-                this.enemy.getHitbox();
+            if (this.enemy.getHitbox().intersect(playerbullet) == true) {
+                this.enemy.setxPosition(500);
+                this.enemy.setyPosition(500);
+                this.enemy.updateEnemyHitbox();
                 score = score + 1;
             }
 
@@ -280,7 +279,7 @@ public class GameEngine extends SurfaceView implements Runnable {
         }
 
 
-        for (int i = 0; i < this.player.getBullets().size();i++) {
+        for (int i = 0; i < this.player.getBullets().size(); i++) {
             Rect playerbullet = this.player.getBullets().get(i);
 
             // For each bullet, check if teh bullet touched the wall
@@ -292,22 +291,20 @@ public class GameEngine extends SurfaceView implements Runnable {
 
 /////////////////////////Eneny///////////////////////////
 
-        if (numLoops % 5  == 0) {
+        if (numLoops % 5 == 0) {
             this.enemy.spawnBullet();
         }
 
 
-        int BULLET_SPEED=50;
-        for(int i=0;i<this.enemy.getBullets().size();i++)
-        {
-            Rect bullet=this.enemy.getBullets().get(i);
-            bullet.left=bullet.left-BULLET_SPEED;
-            bullet.right=bullet.right-BULLET_SPEED;
+        int BULLET_SPEED = 50;
+        for (int i = 0; i < this.enemy.getBullets().size(); i++) {
+            Rect bullet = this.enemy.getBullets().get(i);
+            bullet.left = bullet.left - BULLET_SPEED;
+            bullet.right = bullet.right - BULLET_SPEED;
         }
 
-        if(lives==0)
-        {
-            this.gameIsRunning=false;
+        if (lives == 0) {
+            this.gameIsRunning = false;
         }
 
 //        if(this.player.getHitbox().intersect(this.enemy2.getHitbox())==true)
@@ -320,7 +317,7 @@ public class GameEngine extends SurfaceView implements Runnable {
 
 
         // COLLISION DETECTION ON THE BULLET AND WALL
-        for (int i = 0; i < this.enemy.getBullets().size();i++) {
+        for (int i = 0; i < this.enemy.getBullets().size(); i++) {
             Rect bullet = this.enemy.getBullets().get(i);
 
             // For each bullet, check if teh bullet touched the wall
@@ -331,7 +328,7 @@ public class GameEngine extends SurfaceView implements Runnable {
         }
 
         // COLLISION DETECTION BETWEEN BULLET AND PLAYER
-        for (int i = 0; i < this.enemy.getBullets().size();i++) {
+        for (int i = 0; i < this.enemy.getBullets().size(); i++) {
             Rect bullet = this.enemy.getBullets().get(i);
 
             if (this.player.getHitbox().intersect(bullet)) {
@@ -347,10 +344,7 @@ public class GameEngine extends SurfaceView implements Runnable {
     }
 
 
-
     // MOVING THE BULLETS
-
-
 
 
     public void redrawSprites() {
@@ -359,20 +353,19 @@ public class GameEngine extends SurfaceView implements Runnable {
 
             //----------------
             // configure the drawing tools
-            this.canvas.drawColor(Color.argb(255,255,255,255));
+            this.canvas.drawColor(Color.argb(255, 255, 255, 255));
             paintbrush.setColor(Color.BLUE);
-            this.canvas.drawBitmap(this.background,this.bgXposition,0,paintbrush);
-            this.canvas.drawBitmap(this.background,this.backgroundRightside,0,paintbrush);
+            this.canvas.drawBitmap(this.background, this.bgXposition, 0, paintbrush);
+            this.canvas.drawBitmap(this.background, this.backgroundRightside, 0, paintbrush);
 
 
-
-            this.canvas.drawBitmap(this.player.getImage(),this.player.getxPosition(),this.player.getyPosition(),paintbrush);
-            this.canvas.drawBitmap(this.enemy.getImage(),this.enemy.getxPosition(),this.enemy.getyPosition(),paintbrush);
+            this.canvas.drawBitmap(this.player.getImage(), this.player.getxPosition(), this.player.getyPosition(), paintbrush);
+            this.canvas.drawBitmap(this.enemy.getImage(), this.enemy.getxPosition(), this.enemy.getyPosition(), paintbrush);
 
             this.paintbrush.setColor(Color.YELLOW);
 
             this.paintbrush.setTextSize(65);
-            this.canvas.drawText("Lives Remaining"+lives,1100,800,paintbrush);
+            this.canvas.drawText("Lives Remaining" + lives, 1100, 800, paintbrush);
             // canvas.drawText("Bullets: " + this.enemy.getBullets().size(),1100,720,paintbrush);
 
             canvas.drawText("Score: " + score,
@@ -381,20 +374,21 @@ public class GameEngine extends SurfaceView implements Runnable {
                     paintbrush
             );
 // player bullets
-            for(int i=0;i<this.player.getBullets().size();i++)
-            {
-                Rect bullet=this.player.getBullets().get(i) ;
-                canvas.drawRect(bullet,paintbrush);
+            for (int i = 0; i < this.player.getBullets().size(); i++) {
+                Rect bullet = this.player.getBullets().get(i);
+                canvas.drawRect(bullet, paintbrush);
             }
+
+
+            canvas.drawBitmap(this.powerups.getImage(), this.powerups.getxPosition(),this.powerups.getyPosition(),paintbrush);
 
 
             // this.canvas.drawRect(playerHitbox,paintbrush);
             ///draw bullet on screen
             this.paintbrush.setColor(Color.YELLOW);
-            for(int i=0;i<this.enemy.getBullets().size();i++)
-            {
-                Rect bullet=this.enemy.getBullets().get(i) ;
-                canvas.drawRect(bullet,paintbrush);
+            for (int i = 0; i < this.enemy.getBullets().size(); i++) {
+                Rect bullet = this.enemy.getBullets().get(i);
+                canvas.drawRect(bullet, paintbrush);
             }
 
             // DRAW THE PLAYER HITBOX
@@ -411,8 +405,7 @@ public class GameEngine extends SurfaceView implements Runnable {
     public void setFPS() {
         try {
             gameThread.sleep(50);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
         }
     }
@@ -422,8 +415,7 @@ public class GameEngine extends SurfaceView implements Runnable {
     // ------------------------------
 
 
-    String personTapped="";
-
+    String personTapped = "";
 
 
     public boolean onTouchEvent(MotionEvent event) {
@@ -450,9 +442,7 @@ public class GameEngine extends SurfaceView implements Runnable {
 //            } else if (xPosition > middleOfScreen1) {
 //                personTapped = "left";
 //            }
-        }
-
-        else if (userAction == MotionEvent.ACTION_UP) {
+        } else if (userAction == MotionEvent.ACTION_UP) {
             // Log.d(TAG, "Person lifted finger");
 //            float yPosition = event.getY();
 //            float fingerXPosition = event.getX();
@@ -465,23 +455,43 @@ public class GameEngine extends SurfaceView implements Runnable {
     }
 
 
-    public void moveplayer(double playerxposition, double playeryposition){
+    public void moveplayer(double playerxposition, double playeryposition) {
 
 
         double a = this.xPosition - this.player.getxPosition();
         double b = this.yPosition - this.player.getyPosition();
-        double distance = Math.sqrt((a*a) + (b*b));
+        double distance = Math.sqrt((a * a) + (b * b));
 
 
         double xn = (a / distance);
         double yn = (b / distance);
 
-        this.player.setxPosition(this.player.getxPosition() +  (int)(xn * 40));
-        this.player.setyPosition(this.player.getyPosition() + (int)(yn * 40));
-
+        this.player.setxPosition(this.player.getxPosition() + (int) (xn * 40));
+        this.player.setyPosition(this.player.getyPosition() + (int) (yn * 40));
 
 
     }
 
-}
+
+    public void spawnPowerups() {
+
+        {
+
+
+                Random r = new Random();
+
+                int randomXPos = r.nextInt(this.screenWidth) - 100;
+                int randomYPos = r.nextInt(this.screenHeight) - 100;
+
+                this.powerups.setxPosition(randomXPos + 10);
+                this.powerups.setyPosition(randomYPos - 10);
+                if (this.powerups.getxPosition() <= screenHeight && this.powerups.getyPosition() <= screenHeight) {
+                    this.powerups.setxPosition(randomXPos - 100);
+                    this.powerups.setyPosition(randomYPos - 100);
+                }
+
+            }
+        }
+
+    }
 
