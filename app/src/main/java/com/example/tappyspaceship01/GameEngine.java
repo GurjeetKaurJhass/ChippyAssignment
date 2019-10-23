@@ -79,7 +79,7 @@ public class GameEngine extends SurfaceView implements Runnable {
         this.screenWidth = w;
         this.screenHeight = h - 200;
         player = new Player(this.getContext(), 100, 100);
-        enemy = new Enemy(this.getContext(), 1700, 600);
+        enemy = new Enemy(this.getContext(), 1500, 600);
         powerup = new Powerups(this.getContext(), 500,500);
 
         this.background = BitmapFactory.decodeResource(context.getResources(), R.drawable.background);
@@ -107,12 +107,12 @@ public class GameEngine extends SurfaceView implements Runnable {
             if (numLoops % 100 == 0) {
                 Random r = new Random();
 
-            //    int randomXPos = r.nextInt(this.screenWidth) - 100;
-               int randomYPos = r.nextInt(this.screenHeight) - 100;
+            //   int randomXPos = r.nextInt(this.screenWidth) - 100;
+               int randomYPos = r.nextInt(this.screenHeight) - 200;
 
              //   this.enemy.setxPosition(randomXPos + 10);
-                this.enemy.setyPosition(randomYPos - 10);
-                if (this.enemy.getxPosition() <= screenHeight && this.enemy.getyPosition() <= screenHeight) {
+                this.enemy.setyPosition(randomYPos - 100);
+                if (this.enemy.getyPosition() <= screenHeight) {
                 //    this.enemy.setxPosition(randomXPos - 100);
                     this.enemy.setyPosition(randomYPos - 100);
                 }
