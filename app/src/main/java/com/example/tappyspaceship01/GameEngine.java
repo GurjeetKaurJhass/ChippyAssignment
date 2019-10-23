@@ -42,6 +42,8 @@ public class GameEngine extends SurfaceView implements Runnable {
     int bgXposition;
     int backgroundRightside;
 
+
+
     double yPosition;
     double xPosition;
 
@@ -54,12 +56,11 @@ public class GameEngine extends SurfaceView implements Runnable {
     // ----------------------------
     Player player;
     Enemy enemy;
-    Powerups powerups;
+    Powerups powerup;
     int lives = 100;
     int numLoops;
     int score = 0;
 
-    private ArrayList<Powerups> powerup=new ArrayList<>();
 
     // ----------------------------
     // ## GAME STATS
@@ -79,8 +80,8 @@ public class GameEngine extends SurfaceView implements Runnable {
         this.screenHeight = h - 200;
         player = new Player(this.getContext(), 100, 100);
         enemy = new Enemy(this.getContext(), 1700, 600);
-powerups = new Powerups(this.getContext(), 500,500);
-        this.printScreenInfo();
+        powerup = new Powerups(this.getContext(), 500,500);
+
         this.background = BitmapFactory.decodeResource(context.getResources(), R.drawable.background);
         this.background = Bitmap.createScaledBitmap(this.background, this.screenWidth, this.screenHeight, false);
 //        // @TODO: Add your sprites
@@ -88,7 +89,6 @@ powerups = new Powerups(this.getContext(), 500,500);
         this.bgXposition = 0;
 
     }
-
 
     private void printScreenInfo() {
 
@@ -172,10 +172,11 @@ powerups = new Powerups(this.getContext(), 500,500);
         }
         numLoops = numLoops + 1;
 
+
         this.spawnEnemyShips();
 
         if (numLoops % 120 == 0) {
-            this.spawnPowerups();
+            this.randomPowerups();
         }
 
 
@@ -361,6 +362,13 @@ powerups = new Powerups(this.getContext(), 500,500);
 
             this.canvas.drawBitmap(this.player.getImage(), this.player.getxPosition(), this.player.getyPosition(), paintbrush);
             this.canvas.drawBitmap(this.enemy.getImage(), this.enemy.getxPosition(), this.enemy.getyPosition(), paintbrush);
+            this.canvas.drawBitmap(this.powerup.getImage(), this.powerup.getxPosition(), this.powerup.getyPosition(), paintbrush);
+
+       //hitboxes
+            this.canvas.drawRect(this.player.getHitbox(), paintbrush);
+            this.canvas.drawRect(this.enemy.getHitbox(),paintbrush);
+            this.canvas.drawRect(this.powerup.getHitbox(),paintbrush);
+
 
             this.paintbrush.setColor(Color.YELLOW);
 
@@ -380,7 +388,7 @@ powerups = new Powerups(this.getContext(), 500,500);
             }
 
 
-            canvas.drawBitmap(this.powerups.getImage(), this.powerups.getxPosition(),this.powerups.getyPosition(),paintbrush);
+
 
 
             // this.canvas.drawRect(playerHitbox,paintbrush);
@@ -466,29 +474,27 @@ powerups = new Powerups(this.getContext(), 500,500);
         double xn = (a / distance);
         double yn = (b / distance);
 
-        this.player.setxPosition(this.player.getxPosition() + (int) (xn * 40));
-        this.player.setyPosition(this.player.getyPosition() + (int) (yn * 40));
-
-
+        this.player.setxPosition(this.player.getxPosition() + (int) (xn * 10));
+        this.player.setyPosition(this.player.getyPosition() + (int) (yn * 10));
+        
     }
 
-
-    public void spawnPowerups() {
-
+    public void randomPowerups() {
         {
-
-
-                Random r = new Random();
+            Random r = new Random();
 
                 int randomXPos = r.nextInt(this.screenWidth) - 100;
                 int randomYPos = r.nextInt(this.screenHeight) - 100;
 
-                this.powerups.setxPosition(randomXPos + 10);
-                this.powerups.setyPosition(randomYPos - 10);
-                if (this.powerups.getxPosition() <= screenHeight && this.powerups.getyPosition() <= screenHeight) {
-                    this.powerups.setxPosition(randomXPos - 100);
-                    this.powerups.setyPosition(randomYPos - 100);
+                this.powerup.setxPosition(randomXPos + 10);
+                this.powerup.setyPosition(randomYPos - 10);
+                if (this.powerup.getxPosition() <= screenHeight && this.powerup.getyPosition() <= screenHeight) {
+                    this.powerup.setxPosition(randomXPos - 100);
+                    this.powerup.setyPosition(randomYPos - 100);
                 }
+if(this.player.getHitbox().intersect(this.powerup.getHitbox())){
+
+}
 
             }
         }
