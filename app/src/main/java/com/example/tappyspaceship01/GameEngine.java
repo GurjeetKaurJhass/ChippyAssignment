@@ -165,7 +165,7 @@ public class GameEngine extends SurfaceView implements Runnable {
     public void updatePositions() {
 
 
-        this.bgXposition = this.bgXposition - 50;
+        this.bgXposition = this.bgXposition - 20;
         backgroundRightside = this.bgXposition + this.background.getWidth();
         if (backgroundRightside < 0) {
             this.bgXposition = 0;
