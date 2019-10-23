@@ -32,7 +32,7 @@ public class GameEngine extends SurfaceView implements Runnable {
 
     // threading
     Thread gameThread;
-
+///////test
 
     // drawing variables
     SurfaceHolder holder;
