@@ -65,22 +65,6 @@ public class Enemy {
     }
 
 
-    public void updateEnemyPosition1()
-    {
-
-        this.xPosition=this.xPosition-25;
-        this.updateEnemyHitbox();
-    }
-
-    public void updateEnemyPosition2()
-    {
-
-        this.xPosition=this.xPosition+25;
-        this.updateEnemyHitbox();
-    }
-
-
-;
     public void spawnBullet()
     {
         Rect bullet=new Rect(this.xPosition,this.yPosition+this.image.getHeight()/2,this.xPosition+BULLET_WIDTH,this.yPosition+this.image.getHeight()/2+BULLET_WIDTH);
