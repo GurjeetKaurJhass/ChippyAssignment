@@ -14,8 +14,6 @@ Language -JAVA
 
 This game comprises of an enemy,a player ,powerups and bullets.The enemy and player are shooting each other with bullets.
 
-Timer is shown on the screen.
-
 Lives remaining is shown on screen.
 
 The player can move in all directions up,down,left and right.
