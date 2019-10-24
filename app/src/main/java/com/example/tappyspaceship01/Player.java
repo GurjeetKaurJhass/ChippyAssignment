@@ -24,7 +24,7 @@ public class Player {
 
         return playerbulletxPos;
     }
-    private final int BULLET_WIDTH=15;
+    private final int BULLET_WIDTH=30;
     private ArrayList<Rect> playerbullets=new ArrayList<>();
 
     public Player(Context context, int x, int y) {

@@ -311,6 +311,7 @@ paintbrush.setColor(Color.BLUE);
 
             }
 
+            this.paintbrush.setColor(Color.GREEN);
 
             for (int i = 0; i < this.enemy.getBullets().size(); i++) {
                 Rect bullet = this.enemy.getBullets().get(i);

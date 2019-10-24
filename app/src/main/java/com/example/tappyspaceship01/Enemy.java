@@ -37,7 +37,7 @@ public class Enemy {
 
     private int xPosition;
     private int yPosition;
-    private final int BULLET_WIDTH=15;
+    private final int BULLET_WIDTH=40;
     private ArrayList <Rect> bullets=new ArrayList<>();
     public Enemy(Context context, int x, int y) {
         // 1. set up the initial position of the Enemy
